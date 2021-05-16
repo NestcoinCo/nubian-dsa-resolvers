@@ -1,5 +1,5 @@
 {
-  "name": "dsa-resolvers",
+  "name": "bxdfi-resolvers",
   "version": "1.0.0",
   "description": "The smart contracts which simplifies read operations.",
   "main": "index.js",
@@ -8,15 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/InstaDApp/dsa-resolvers.git"
+    "url": "https://github.com/Open-Currency-Collective/bxdfi-dsa-resolvers"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/InstaDApp/dsa-resolvers/issues"
+    "url": "https://github.com/Open-Currency-Collective/bxdfi-dsa-resolvers/issues"
   },
-  "homepage": "https://github.com/InstaDApp/dsa-resolvers#readme",
+  "homepage": "https://github.com/Open-Currency-Collective/bxdfi-dsa-resolvers#readme",
   "dependencies": {
+    "@nomiclabs/hardhat-etherscan": "^2.1.2",
+    "@tenderly/hardhat-tenderly": "^1.0.12",
     "solc": "^0.6.0"
   },
   "devDependencies": {
