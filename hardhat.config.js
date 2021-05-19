@@ -1,28 +1,17 @@
-require("dotenv").config();
-require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
+require("@tenderly/hardhat-tenderly");
+require("@nomiclabs/hardhat-etherscan");
+require('dotenv').config();
 
-if (!process.env.ALCHEMY_API_KEY) {
-  throw new Error("ENV Variable ALCHEMY_API_KEY not set!");
-}
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+const { utils } = require("ethers");
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async () => {
-  const accounts = await ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
-
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
+  defaultNetwork: "localhost",
   solidity: {
     compilers: [
       {
@@ -30,23 +19,42 @@ module.exports = {
       },
       {
         version: "0.7.3"
-      }
-    ],
-    optimizer: {
-      enabled: true,
-      runs: 200,
-    },
+      },
+    ]
   },
   networks: {
+
+    bsctestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      chainId: 97,
+      gasPrice: 20000000000,
+      accounts: [`0x${PRIVATE_KEY}`],
+    },
+    localhost: {
+      url: `http://localhost:8545`,
+      accounts: [`0x${PRIVATE_KEY}`],
+      timeout: 150000,
+      gasPrice: parseInt(utils.parseUnits("132", "gwei"))
+    },
+    bscmainnet:{
+      url: `https://bsc-dataseed1.binance.org`,
+      accounts: [`0x${PRIVATE_KEY}`],
+      timeout: 150000,
+      gasPrice: parseInt(utils.parseUnits("132", "gwei"))
+    },
     hardhat: {
       forking: {
-        url: "https://eth-mainnet.alchemyapi.io/v2/" + ALCHEMY_API_KEY,
-        blockNumber: 12386345
-      }
+        url: `https://bsc-dataseed.binance.org/`,
+        blockNumber: 6674768,
+      },
+      blockGasLimit: 12000000,
     }
   },
-  mocha: {
-    timeout: 100000,
+  etherscan: {
+    apiKey: process.env.BSCSCAN_API_KEY
+  },
+  tenderly: {
+    project: process.env.TENDERLY_PROJECT,
+    username: process.env.TENDERLY_USERNAME,
   }
 };
-

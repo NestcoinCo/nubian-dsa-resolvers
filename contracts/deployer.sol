@@ -13,8 +13,8 @@ interface ConnectorInterface {
 }
 
 contract Basics {
-    IndexInterface instaIndex = IndexInterface(0x2971AdFa57b20E5a416aE5a708A8655A9c74f723);
-    ConnectorsInterface connectorsContract = ConnectorsInterface(0xD6A602C01a023B98Ecfb29Df02FBA380d3B21E0c);
+    IndexInterface instaIndex = IndexInterface(0xfDE04Da1560c238EDBC07Df1779A8593C39103Bc);
+    ConnectorsInterface connectorsContract = ConnectorsInterface(0xc9Fc01064Ad33ACaa4534dA4604Fd6602CEF873d);
 }
 
 contract DeployerAuth is Basics {
