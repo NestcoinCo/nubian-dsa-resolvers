@@ -1,16 +1,15 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-interface IUniswapV2Router02 {
+interface IPancakeswapV2Router02 {
     function factory() external pure returns (address);
     function WETH() external pure returns (address);
+
+    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
+    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
+    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
     function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
     function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
-    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
-}
-
-interface IUniswapV2Factory {
-  function getPair(address tokenA, address tokenB) external view returns (address pair);
 }
 
 interface TokenInterface {
@@ -22,7 +21,7 @@ interface TokenInterface {
     function totalSupply() external view returns (uint);
 }
 
-interface IUniswapV2Pair {
+interface IPancakeswapPair {
   function balanceOf(address owner) external view returns (uint);
   function totalSupply() external view returns (uint);
 
@@ -39,6 +38,10 @@ interface IUniswapV2Pair {
   function price1CumulativeLast() external view returns (uint);
 }
 
+interface IPancakeswapV2Factory {
+    function getPair(address tokenA, address tokenB) external view returns (address pair);
+
+}
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -271,32 +274,30 @@ contract DSMath {
 
 }
 
-
 contract Helpers is DSMath {
     /**
-     * @dev get Ethereum address
+     * @dev get Bnb address
      */
     function getEthAddr() public pure returns (address) {
-        return 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+        return 0xae13d989dac2f0debff460ac112a837c89baa7cd;
     }
 }
 
-contract UniswapHelpers is Helpers {
+contract PancakeswapHelpers is Helpers {
     using SafeMath for uint256;
 
     /**
      * @dev Return WETH address
      */
     function getAddressWETH() internal pure returns (address) {
-        return 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // mainnet
-        // return 0xd0A1E359811322d97991E03f863a0C30C2cF029C; // kovan
+        return 0xae13d989dac2f0debff460ac112a837c89baa7cd; // bsc testnet
     }
 
     /**
      * @dev Return uniswap v2 router02 Address
      */
-    function getUniswapAddr() internal pure returns (address) {
-        return 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    function getPancakeAddr() internal pure returns (address) {
+        return 0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     }
 
     function convert18ToDec(uint _dec, uint256 _amt) internal pure returns (uint256 amt) {
@@ -317,7 +318,7 @@ contract UniswapHelpers is Helpers {
         address sellAddr,
         uint sellAmt
     ) internal view returns(uint buyAmt) {
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
         address[] memory paths = new address[](2);
         paths[0] = address(sellAddr);
         paths[1] = address(buyAddr);
@@ -333,7 +334,7 @@ contract UniswapHelpers is Helpers {
         address sellAddr,
         uint buyAmt
     ) internal view returns(uint sellAmt) {
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
         address[] memory paths = new address[](2);
         paths[0] = address(sellAddr);
         paths[1] = address(buyAddr);
@@ -392,8 +393,8 @@ contract UniswapHelpers is Helpers {
         uint uniAmt
     ) internal view returns (uint amtA, uint amtB)
     {
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
-        address exchangeAddr = IUniswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
         require(exchangeAddr != address(0), "pair-not-found.");
         TokenInterface uniToken = TokenInterface(exchangeAddr);
         uint share = wdiv(uniAmt, uniToken.totalSupply());
@@ -415,7 +416,6 @@ contract UniswapHelpers is Helpers {
                 ).sub(reserveIn.mul(1997)) / 1994;
     }
 }
-
 
 contract Resolver is UniswapHelpers {
 
@@ -444,9 +444,9 @@ contract Resolver is UniswapHelpers {
     ) public view returns (uint amountB, uint uniAmount, uint amountAMin, uint amountBMin)
     {       
         (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
-        IUniswapV2Factory factory = IUniswapV2Factory(router.factory());
-        IUniswapV2Pair lpToken = IUniswapV2Pair(factory.getPair(address(_tokenA), address(_tokenB)));
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        IPancakeswapV2Factory factory = IPancakeswapV2Factory(router.factory());
+        IPancakeswapPair lpToken = IPancakeswapPair(factory.getPair(address(_tokenA), address(_tokenB)));
         require(address(lpToken) != address(0), "No-exchange-address");
         
         (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
@@ -470,9 +470,9 @@ contract Resolver is UniswapHelpers {
     ) public view returns (uint amtA, uint amtB, uint uniAmt, uint minUniAmt)
     {       
         (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
-        IUniswapV2Factory factory = IUniswapV2Factory(router.factory());
-        IUniswapV2Pair lpToken = IUniswapV2Pair(factory.getPair(address(_tokenA), address(_tokenB)));
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        IPancakeswapV2Factory factory = IPancakeswapV2Factory(router.factory());
+        IPancakeswapPair lpToken = IPancakeswapPair(factory.getPair(address(_tokenA), address(_tokenB)));
         require(address(lpToken) != address(0), "No-exchange-address");
         
         (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
@@ -497,8 +497,8 @@ contract Resolver is UniswapHelpers {
     ) public view returns (uint unitAmt)
     {
         (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
-        address exchangeAddr = IUniswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
         require(exchangeAddr == address(0), "pair-found.");
         uint _amtA18 = convertTo18(_tokenA.decimals(), amtA);
         uint _amtB18 = convertTo18(_tokenB.decimals(), amtB);
@@ -552,17 +552,17 @@ contract Resolver is UniswapHelpers {
         TokenPair[] memory tokenPairs
     ) public view returns (PoolData[] memory)
     {
-        IUniswapV2Router02 router = IUniswapV2Router02(getUniswapAddr());
+        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
         uint _len = tokenPairs.length;
         PoolData[] memory poolData = new PoolData[](_len);
         for (uint i = 0; i < _len; i++) {
             (TokenInterface tokenA, TokenInterface tokenB) = changeEthAddress(tokenPairs[i].tokenA, tokenPairs[i].tokenB);
-            address exchangeAddr = IUniswapV2Factory(router.factory()).getPair(
+            address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(
                 address(tokenA),
                 address(tokenB)
             );
             if (exchangeAddr != address(0)) {
-                IUniswapV2Pair lpToken = IUniswapV2Pair(exchangeAddr);
+                IPancakeswapPair lpToken = IPancakeswapPair(exchangeAddr);
                 (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
                 (reserveA, reserveB) = lpToken.token0() == address(tokenA) ? (reserveA, reserveB) : (reserveB, reserveA);
         
@@ -603,7 +603,7 @@ contract Resolver is UniswapHelpers {
         address wethAddr = getAddressWETH();
         address ethAddr = getEthAddr();
         for (uint i = 0; i < _len; i++) {
-            IUniswapV2Pair lpToken = IUniswapV2Pair(lpTokens[i]);
+            IPancakeswapPair lpToken = IPancakeswapPair(lpTokens[i]);
             (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
             (address tokenA, address tokenB) = (lpToken.token0(), lpToken.token1());
     
@@ -631,7 +631,6 @@ contract Resolver is UniswapHelpers {
 }
 
 
-contract BxdUniswapV2Resolver is Resolver {
-    string public constant name = "UniswapV2-Resolver-v1.1";
+contract BxdPancakeswapResolver is Resolver {
+    string public constant name = "Pancakeswap-Resolver-v1.1";
 }
-

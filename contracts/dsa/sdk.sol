@@ -107,7 +107,7 @@ contract SdkResolver is Controllers {
     }
 }
 
-contract InstaSDK is SdkResolver {
+contract BxdSDK is SdkResolver {
     string constant public name = "SDK-v1";
 
     constructor (address index) public {

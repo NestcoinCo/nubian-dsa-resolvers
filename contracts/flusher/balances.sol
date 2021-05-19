@@ -44,6 +44,6 @@ contract Resolver {
 }
 
 
-contract InstaFlusherERC20Resolver is Resolver {
+contract BxdFlusherERC20Resolver is Resolver {
     string public constant name = "ERC20-Flusher-Resolver-v1";
 }

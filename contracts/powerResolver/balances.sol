@@ -33,6 +33,6 @@ contract Resolver {
 }
 
 
-contract InstaPowerERC20Resolver is Resolver {
+contract BxdPowerERC20Resolver is Resolver {
     string public constant name = "ERC20-Power-Resolver-v1";
 }
