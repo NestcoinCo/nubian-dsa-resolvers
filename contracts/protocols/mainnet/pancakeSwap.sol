@@ -279,7 +279,7 @@ contract Helpers is DSMath {
      * @dev get Bnb address
      */
     function getEthAddr() public pure returns (address) {
-        return 0xae13d989dac2f0debff460ac112a837c89baa7cd;
+        return 0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd;
     }
 }
 
@@ -290,7 +290,7 @@ contract PancakeswapHelpers is Helpers {
      * @dev Return WETH address
      */
     function getAddressWETH() internal pure returns (address) {
-        return 0xae13d989dac2f0debff460ac112a837c89baa7cd; // bsc testnet
+        return 0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd; // bsc testnet
     }
 
     /**
@@ -417,7 +417,7 @@ contract PancakeswapHelpers is Helpers {
     }
 }
 
-contract Resolver is UniswapHelpers {
+contract Resolver is PancakeswapHelpers {
 
     function getBuyAmount(address buyAddr, address sellAddr, uint sellAmt, uint slippage)
     public view returns (uint buyAmt, uint unitAmt)
@@ -553,9 +553,9 @@ contract Resolver is UniswapHelpers {
     ) public view returns (PoolData[] memory)
     {
         IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
-        uint _len = tokenPairs.length;
-        PoolData[] memory poolData = new PoolData[](_len);
-        for (uint i = 0; i < _len; i++) {
+    
+        PoolData[] memory poolData = new PoolData[](tokenPairs.length);
+        for (uint i = 0; i < tokenPairs.length; i++) {
             (TokenInterface tokenA, TokenInterface tokenB) = changeEthAddress(tokenPairs[i].tokenA, tokenPairs[i].tokenB);
             address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(
                 address(tokenA),
@@ -598,32 +598,28 @@ contract Resolver is UniswapHelpers {
         address[] memory lpTokens
     ) public view returns (PoolData[] memory)
     {
-        uint _len = lpTokens.length;
-        PoolData[] memory poolData = new PoolData[](_len);
-        address wethAddr = getAddressWETH();
-        address ethAddr = getEthAddr();
-        for (uint i = 0; i < _len; i++) {
+        PoolData[] memory poolData = new PoolData[](lpTokens.length);
+ 
+        for (uint i = 0; i < lpTokens.length; i++) {
             IPancakeswapPair lpToken = IPancakeswapPair(lpTokens[i]);
             (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
             (address tokenA, address tokenB) = (lpToken.token0(), lpToken.token1());
     
-            uint lpAmount = lpToken.balanceOf(owner);
-            uint totalSupply = lpToken.totalSupply();
-            uint share = wdiv(lpAmount, totalSupply);
+            uint share = wdiv(lpToken.balanceOf(owner), lpToken.totalSupply());
             uint amtA = wmul(reserveA, share);
             uint amtB = wmul(reserveB, share);
             poolData[i] = PoolData(
-                tokenA == wethAddr ? ethAddr : tokenA,
-                tokenB == wethAddr ? ethAddr : tokenB,
+                tokenA == getAddressWETH() ? getEthAddr() : tokenA,
+                tokenB == getAddressWETH() ? getEthAddr() : tokenB,
                 address(lpToken),
                 reserveA,
                 reserveB,
                 amtA,
                 amtB,
-                tokenA == wethAddr ? owner.balance : TokenInterface(tokenA).balanceOf(owner),
-                tokenB == wethAddr ? owner.balance : TokenInterface(tokenB).balanceOf(owner),
-                lpAmount,
-                totalSupply
+                tokenA == getAddressWETH() ? owner.balance : TokenInterface(tokenA).balanceOf(owner),
+                tokenB == getAddressWETH() ? owner.balance : TokenInterface(tokenB).balanceOf(owner),
+                lpToken.balanceOf(owner),
+               lpToken.totalSupply()
             );
         }
         return poolData;
