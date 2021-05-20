@@ -3,44 +3,92 @@ pragma experimental ABIEncoderV2;
 
 interface IPancakeswapV2Router02 {
     function factory() external pure returns (address);
+
     function WETH() external pure returns (address);
 
-    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
-    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
-    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
-    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
-    function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
+    function quote(
+        uint256 amountA,
+        uint256 reserveA,
+        uint256 reserveB
+    ) external pure returns (uint256 amountB);
+
+    function getAmountOut(
+        uint256 amountIn,
+        uint256 reserveIn,
+        uint256 reserveOut
+    ) external pure returns (uint256 amountOut);
+
+    function getAmountIn(
+        uint256 amountOut,
+        uint256 reserveIn,
+        uint256 reserveOut
+    ) external pure returns (uint256 amountIn);
+
+    function getAmountsOut(uint256 amountIn, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
+
+    function getAmountsIn(uint256 amountOut, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 }
 
 interface TokenInterface {
-    function allowance(address, address) external view returns (uint);
-    function balanceOf(address) external view returns (uint);
-    function approve(address, uint) external;
-    function transfer(address, uint) external returns (bool);
-    function decimals() external view returns (uint);
-    function totalSupply() external view returns (uint);
+    function allowance(address, address) external view returns (uint256);
+
+    function balanceOf(address) external view returns (uint256);
+
+    function approve(address, uint256) external;
+
+    function transfer(address, uint256) external returns (bool);
+
+    function decimals() external view returns (uint256);
+
+    function totalSupply() external view returns (uint256);
 }
 
 interface IPancakeswapPair {
-  function balanceOf(address owner) external view returns (uint);
-  function totalSupply() external view returns (uint);
+    function balanceOf(address owner) external view returns (uint256);
 
+    function totalSupply() external view returns (uint256);
 
-  function approve(address spender, uint value) external returns (bool);
-  function transfer(address to, uint value) external returns (bool);
-  function transferFrom(address from, address to, uint value) external returns (bool);
+    function approve(address spender, uint256 value) external returns (bool);
 
-  function factory() external view returns (address);
-  function token0() external view returns (address);
-  function token1() external view returns (address);
-  function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-  function price0CumulativeLast() external view returns (uint);
-  function price1CumulativeLast() external view returns (uint);
+    function transfer(address to, uint256 value) external returns (bool);
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
+
+    function factory() external view returns (address);
+
+    function token0() external view returns (address);
+
+    function token1() external view returns (address);
+
+    function getReserves()
+        external
+        view
+        returns (
+            uint112 reserve0,
+            uint112 reserve1,
+            uint32 blockTimestampLast
+        );
+
+    function price0CumulativeLast() external view returns (uint256);
+
+    function price1CumulativeLast() external view returns (uint256);
 }
 
 interface IPancakeswapV2Factory {
-    function getPair(address tokenA, address tokenB) external view returns (address pair);
-
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        returns (address pair);
 }
 
 /**
@@ -98,7 +146,11 @@ library SafeMath {
      *
      * - Subtraction cannot overflow.
      */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function sub(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b <= a, errorMessage);
         uint256 c = a - b;
 
@@ -157,7 +209,11 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function div(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b > 0, errorMessage);
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
@@ -193,12 +249,15 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function mod(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b != 0, errorMessage);
         return a % b;
     }
 }
-
 
 library Babylonian {
     // credit for this implementation goes to
@@ -249,29 +308,27 @@ library Babylonian {
 }
 
 contract DSMath {
-
-    function add(uint x, uint y) internal pure returns (uint z) {
+    function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require((z = x + y) >= x, "math-not-safe");
     }
 
-    function mul(uint x, uint y) internal pure returns (uint z) {
+    function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require(y == 0 || (z = x * y) / y == x, "math-not-safe");
     }
 
-    function sub(uint x, uint y) internal pure returns (uint z) {
+    function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
         require((z = x - y) <= x, "sub-overflow");
     }
 
-    uint constant WAD = 10 ** 18;
+    uint256 constant WAD = 10**18;
 
-    function wmul(uint x, uint y) internal pure returns (uint z) {
+    function wmul(uint256 x, uint256 y) internal pure returns (uint256 z) {
         z = add(mul(x, y), WAD / 2) / WAD;
     }
 
-    function wdiv(uint x, uint y) internal pure returns (uint z) {
+    function wdiv(uint256 x, uint256 y) internal pure returns (uint256 z) {
         z = add(mul(x, WAD), y / 2) / y;
     }
-
 }
 
 contract Helpers is DSMath {
@@ -300,73 +357,85 @@ contract PancakeswapHelpers is Helpers {
         return 0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     }
 
-    function convert18ToDec(uint _dec, uint256 _amt) internal pure returns (uint256 amt) {
-        amt = (_amt / 10 ** (18 - _dec));
+    function convert18ToDec(uint256 _dec, uint256 _amt)
+        internal
+        pure
+        returns (uint256 amt)
+    {
+        amt = (_amt / 10**(18 - _dec));
     }
 
-    function convertTo18(uint _dec, uint256 _amt) internal pure returns (uint256 amt) {
-        amt = mul(_amt, 10 ** (18 - _dec));
+    function convertTo18(uint256 _dec, uint256 _amt)
+        internal
+        pure
+        returns (uint256 amt)
+    {
+        amt = mul(_amt, 10**(18 - _dec));
     }
 
-    function changeEthAddress(address buy, address sell) internal pure returns(TokenInterface _buy, TokenInterface _sell){
-        _buy = buy == getEthAddr() ? TokenInterface(getAddressWETH()) : TokenInterface(buy);
-        _sell = sell == getEthAddr() ? TokenInterface(getAddressWETH()) : TokenInterface(sell);
+    function changeEthAddress(address buy, address sell)
+        internal
+        pure
+        returns (TokenInterface _buy, TokenInterface _sell)
+    {
+        _buy = buy == getEthAddr()
+            ? TokenInterface(getAddressWETH())
+            : TokenInterface(buy);
+        _sell = sell == getEthAddr()
+            ? TokenInterface(getAddressWETH())
+            : TokenInterface(sell);
     }
 
     function getExpectedBuyAmt(
         address buyAddr,
         address sellAddr,
-        uint sellAmt
-    ) internal view returns(uint buyAmt) {
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        uint256 sellAmt
+    ) internal view returns (uint256 buyAmt) {
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
         address[] memory paths = new address[](2);
         paths[0] = address(sellAddr);
         paths[1] = address(buyAddr);
-        uint[] memory amts = router.getAmountsOut(
-            sellAmt,
-            paths
-        );
+        uint256[] memory amts = router.getAmountsOut(sellAmt, paths);
         buyAmt = amts[1];
     }
 
     function getExpectedSellAmt(
         address buyAddr,
         address sellAddr,
-        uint buyAmt
-    ) internal view returns(uint sellAmt) {
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        uint256 buyAmt
+    ) internal view returns (uint256 sellAmt) {
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
         address[] memory paths = new address[](2);
         paths[0] = address(sellAddr);
         paths[1] = address(buyAddr);
-        uint[] memory amts = router.getAmountsIn(
-            buyAmt,
-            paths
-        );
+        uint256[] memory amts = router.getAmountsIn(buyAmt, paths);
         sellAmt = amts[0];
     }
 
     function getBuyUnitAmt(
         TokenInterface buyAddr,
-        uint expectedAmt,
+        uint256 expectedAmt,
         TokenInterface sellAddr,
-        uint sellAmt,
-        uint slippage
-    ) internal view returns (uint unitAmt) {
-        uint _sellAmt = convertTo18((sellAddr).decimals(), sellAmt);
-        uint _buyAmt = convertTo18(buyAddr.decimals(), expectedAmt);
+        uint256 sellAmt,
+        uint256 slippage
+    ) internal view returns (uint256 unitAmt) {
+        uint256 _sellAmt = convertTo18((sellAddr).decimals(), sellAmt);
+        uint256 _buyAmt = convertTo18(buyAddr.decimals(), expectedAmt);
         unitAmt = wdiv(_buyAmt, _sellAmt);
         unitAmt = wmul(unitAmt, sub(WAD, slippage));
     }
 
     function getSellUnitAmt(
         TokenInterface sellAddr,
-        uint expectedAmt,
+        uint256 expectedAmt,
         TokenInterface buyAddr,
-        uint buyAmt,
-        uint slippage
-    ) internal view returns (uint unitAmt) {
-        uint _buyAmt = convertTo18(buyAddr.decimals(), buyAmt);
-        uint _sellAmt = convertTo18(sellAddr.decimals(), expectedAmt);
+        uint256 buyAmt,
+        uint256 slippage
+    ) internal view returns (uint256 unitAmt) {
+        uint256 _buyAmt = convertTo18(buyAddr.decimals(), buyAmt);
+        uint256 _sellAmt = convertTo18(sellAddr.decimals(), expectedAmt);
         unitAmt = wdiv(_sellAmt, _buyAmt);
         unitAmt = wmul(unitAmt, add(WAD, slippage));
     }
@@ -374,13 +443,13 @@ contract PancakeswapHelpers is Helpers {
     function _getWithdrawUnitAmts(
         TokenInterface tokenA,
         TokenInterface tokenB,
-        uint amtA,
-        uint amtB,
-        uint uniAmt,
-        uint slippage
-    ) internal view returns (uint unitAmtA, uint unitAmtB) {
-        uint _amtA = convertTo18(tokenA.decimals(), amtA);
-        uint _amtB = convertTo18(tokenB.decimals(), amtB);
+        uint256 amtA,
+        uint256 amtB,
+        uint256 uniAmt,
+        uint256 slippage
+    ) internal view returns (uint256 unitAmtA, uint256 unitAmtB) {
+        uint256 _amtA = convertTo18(tokenA.decimals(), amtA);
+        uint256 _amtB = convertTo18(tokenB.decimals(), amtB);
         unitAmtA = wdiv(_amtA, uniAmt);
         unitAmtA = wmul(unitAmtA, sub(WAD, slippage));
         unitAmtB = wdiv(_amtB, uniAmt);
@@ -390,14 +459,18 @@ contract PancakeswapHelpers is Helpers {
     function _getWithdrawAmts(
         TokenInterface _tokenA,
         TokenInterface _tokenB,
-        uint uniAmt
-    ) internal view returns (uint amtA, uint amtB)
-    {
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
-        address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
+        uint256 uniAmt
+    ) internal view returns (uint256 amtA, uint256 amtB) {
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
+        address exchangeAddr =
+            IPancakeswapV2Factory(router.factory()).getPair(
+                address(_tokenA),
+                address(_tokenB)
+            );
         require(exchangeAddr != address(0), "pair-not-found.");
         TokenInterface uniToken = TokenInterface(exchangeAddr);
-        uint share = wdiv(uniAmt, uniToken.totalSupply());
+        uint256 share = wdiv(uniAmt, uniToken.totalSupply());
         amtA = wmul(_tokenA.balanceOf(exchangeAddr), share);
         amtB = wmul(_tokenB.balanceOf(exchangeAddr), share);
     }
@@ -407,76 +480,125 @@ contract PancakeswapHelpers is Helpers {
         pure
         returns (uint256)
     {
-         return
+        return
             Babylonian
                 .sqrt(
-                    reserveIn.mul(
-                        userIn.mul(3988000).add(reserveIn.mul(3988009))
-                    )
-                ).sub(reserveIn.mul(1997)) / 1994;
+                reserveIn.mul(userIn.mul(3988000).add(reserveIn.mul(3988009)))
+            )
+                .sub(reserveIn.mul(1997)) / 1994;
     }
 }
 
 contract Resolver is PancakeswapHelpers {
-
-    function getBuyAmount(address buyAddr, address sellAddr, uint sellAmt, uint slippage)
-    public view returns (uint buyAmt, uint unitAmt)
-    {
-        (TokenInterface _buyAddr, TokenInterface _sellAddr) = changeEthAddress(buyAddr, sellAddr);
-        buyAmt = getExpectedBuyAmt(address(_buyAddr), address(_sellAddr), sellAmt);
+    function getBuyAmount(
+        address buyAddr,
+        address sellAddr,
+        uint256 sellAmt,
+        uint256 slippage
+    ) public view returns (uint256 buyAmt, uint256 unitAmt) {
+        (TokenInterface _buyAddr, TokenInterface _sellAddr) =
+            changeEthAddress(buyAddr, sellAddr);
+        buyAmt = getExpectedBuyAmt(
+            address(_buyAddr),
+            address(_sellAddr),
+            sellAmt
+        );
         unitAmt = getBuyUnitAmt(_buyAddr, buyAmt, _sellAddr, sellAmt, slippage);
     }
 
-    function getSellAmount(address buyAddr, address sellAddr, uint buyAmt, uint slippage)
-    public view returns (uint sellAmt, uint unitAmt)
-    {
-        (TokenInterface _buyAddr, TokenInterface _sellAddr) = changeEthAddress(buyAddr, sellAddr);
-        sellAmt = getExpectedSellAmt(address(_buyAddr), address(_sellAddr), buyAmt);
-        unitAmt = getSellUnitAmt(_sellAddr, sellAmt, _buyAddr, buyAmt, slippage);
+    function getSellAmount(
+        address buyAddr,
+        address sellAddr,
+        uint256 buyAmt,
+        uint256 slippage
+    ) public view returns (uint256 sellAmt, uint256 unitAmt) {
+        (TokenInterface _buyAddr, TokenInterface _sellAddr) =
+            changeEthAddress(buyAddr, sellAddr);
+        sellAmt = getExpectedSellAmt(
+            address(_buyAddr),
+            address(_sellAddr),
+            buyAmt
+        );
+        unitAmt = getSellUnitAmt(
+            _sellAddr,
+            sellAmt,
+            _buyAddr,
+            buyAmt,
+            slippage
+        );
     }
 
     function getDepositAmount(
         address tokenA,
         address tokenB,
-        uint amountA,
-        uint slippageA,
-        uint slippageB
-    ) public view returns (uint amountB, uint uniAmount, uint amountAMin, uint amountBMin)
-    {       
-        (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        uint256 amountA,
+        uint256 slippageA,
+        uint256 slippageB
+    )
+        public
+        view
+        returns (
+            uint256 amountB,
+            uint256 uniAmount,
+            uint256 amountAMin,
+            uint256 amountBMin
+        )
+    {
+        (TokenInterface _tokenA, TokenInterface _tokenB) =
+            changeEthAddress(tokenA, tokenB);
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
         IPancakeswapV2Factory factory = IPancakeswapV2Factory(router.factory());
-        IPancakeswapPair lpToken = IPancakeswapPair(factory.getPair(address(_tokenA), address(_tokenB)));
+        IPancakeswapPair lpToken =
+            IPancakeswapPair(
+                factory.getPair(address(_tokenA), address(_tokenB))
+            );
         require(address(lpToken) != address(0), "No-exchange-address");
-        
+
         (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
-        (reserveA, reserveB) = lpToken.token0() == address(_tokenA) ? (reserveA, reserveB) : (reserveB, reserveA);
-        
+        (reserveA, reserveB) = lpToken.token0() == address(_tokenA)
+            ? (reserveA, reserveB)
+            : (reserveB, reserveA);
+
         amountB = router.quote(amountA, reserveA, reserveB);
-         
-        uniAmount= mul(amountA, lpToken.totalSupply());
-        uniAmount= uniAmount / reserveA;
-        
+
+        uniAmount = mul(amountA, lpToken.totalSupply());
+        uniAmount = uniAmount / reserveA;
+
         amountAMin = wmul(sub(WAD, slippageA), amountA);
         amountBMin = wmul(sub(WAD, slippageB), amountB);
-        
     }
 
     function getSingleDepositAmount(
         address tokenA,
         address tokenB,
-        uint amountA,
-        uint slippage
-    ) public view returns (uint amtA, uint amtB, uint uniAmt, uint minUniAmt)
-    {       
-        (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
+        uint256 amountA,
+        uint256 slippage
+    )
+        public
+        view
+        returns (
+            uint256 amtA,
+            uint256 amtB,
+            uint256 uniAmt,
+            uint256 minUniAmt
+        )
+    {
+        (TokenInterface _tokenA, TokenInterface _tokenB) =
+            changeEthAddress(tokenA, tokenB);
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
         IPancakeswapV2Factory factory = IPancakeswapV2Factory(router.factory());
-        IPancakeswapPair lpToken = IPancakeswapPair(factory.getPair(address(_tokenA), address(_tokenB)));
+        IPancakeswapPair lpToken =
+            IPancakeswapPair(
+                factory.getPair(address(_tokenA), address(_tokenB))
+            );
         require(address(lpToken) != address(0), "No-exchange-address");
-        
+
         (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
-        (reserveA, reserveB) = lpToken.token0() == address(_tokenA) ? (reserveA, reserveB) : (reserveB, reserveA);
+        (reserveA, reserveB) = lpToken.token0() == address(_tokenA)
+            ? (reserveA, reserveB)
+            : (reserveB, reserveA);
 
         uint256 swapAmtA = calculateSwapInAmount(reserveA, amountA);
 
@@ -492,32 +614,42 @@ contract Resolver is PancakeswapHelpers {
     function getDepositAmountNewPool(
         address tokenA,
         address tokenB,
-        uint amtA,
-        uint amtB
-    ) public view returns (uint unitAmt)
-    {
-        (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
-        address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(address(_tokenA), address(_tokenB));
+        uint256 amtA,
+        uint256 amtB
+    ) public view returns (uint256 unitAmt) {
+        (TokenInterface _tokenA, TokenInterface _tokenB) =
+            changeEthAddress(tokenA, tokenB);
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
+        address exchangeAddr =
+            IPancakeswapV2Factory(router.factory()).getPair(
+                address(_tokenA),
+                address(_tokenB)
+            );
         require(exchangeAddr == address(0), "pair-found.");
-        uint _amtA18 = convertTo18(_tokenA.decimals(), amtA);
-        uint _amtB18 = convertTo18(_tokenB.decimals(), amtB);
+        uint256 _amtA18 = convertTo18(_tokenA.decimals(), amtA);
+        uint256 _amtB18 = convertTo18(_tokenB.decimals(), amtB);
         unitAmt = wdiv(_amtB18, _amtA18);
     }
 
     function getWithdrawAmounts(
         address tokenA,
         address tokenB,
-        uint uniAmt,
-        uint slippage
-    ) public view returns (uint amtA, uint amtB, uint unitAmtA, uint unitAmtB)
+        uint256 uniAmt,
+        uint256 slippage
+    )
+        public
+        view
+        returns (
+            uint256 amtA,
+            uint256 amtB,
+            uint256 unitAmtA,
+            uint256 unitAmtB
+        )
     {
-        (TokenInterface _tokenA, TokenInterface _tokenB) = changeEthAddress(tokenA, tokenB);
-        (amtA, amtB) = _getWithdrawAmts(
-            _tokenA,
-            _tokenB,
-            uniAmt
-        );
+        (TokenInterface _tokenA, TokenInterface _tokenB) =
+            changeEthAddress(tokenA, tokenB);
+        (amtA, amtB) = _getWithdrawAmts(_tokenA, _tokenB, uniAmt);
         (unitAmtA, unitAmtB) = _getWithdrawUnitAmts(
             _tokenA,
             _tokenB,
@@ -527,7 +659,9 @@ contract Resolver is PancakeswapHelpers {
             slippage
         );
     }
+}
 
+contract PancakeswapPositionGetter is PancakeswapHelpers {
     struct TokenPair {
         address tokenA;
         address tokenB;
@@ -537,40 +671,45 @@ contract Resolver is PancakeswapHelpers {
         address tokenA;
         address tokenB;
         address lpAddress;
-        uint reserveA;
-        uint reserveB;
-        uint tokenAShareAmt;
-        uint tokenBShareAmt;
-        uint tokenABalance;
-        uint tokenBBalance;
-        uint lpAmount;
-        uint totalSupply;
+        uint256 reserveA;
+        uint256 reserveB;
+        uint256 tokenAShareAmt;
+        uint256 tokenBShareAmt;
+        uint256 tokenABalance;
+        uint256 tokenBBalance;
+        uint256 lpAmount;
+        uint256 totalSupply;
     }
 
-    function getPositionByPair(
-        address owner,
-        TokenPair[] memory tokenPairs
-    ) public view returns (PoolData[] memory)
+    function getPositionByPair(address owner, TokenPair[] memory tokenPairs)
+        public
+        view
+        returns (PoolData[] memory)
     {
-        IPancakeswapV2Router02 router = IPancakeswapV2Router02(getPancakeAddr());
-    
+        IPancakeswapV2Router02 router =
+            IPancakeswapV2Router02(getPancakeAddr());
+
         PoolData[] memory poolData = new PoolData[](tokenPairs.length);
-        for (uint i = 0; i < tokenPairs.length; i++) {
-            (TokenInterface tokenA, TokenInterface tokenB) = changeEthAddress(tokenPairs[i].tokenA, tokenPairs[i].tokenB);
-            address exchangeAddr = IPancakeswapV2Factory(router.factory()).getPair(
-                address(tokenA),
-                address(tokenB)
-            );
+        for (uint256 i = 0; i < tokenPairs.length; i++) {
+            (TokenInterface tokenA, TokenInterface tokenB) =
+                changeEthAddress(tokenPairs[i].tokenA, tokenPairs[i].tokenB);
+            address exchangeAddr =
+                IPancakeswapV2Factory(router.factory()).getPair(
+                    address(tokenA),
+                    address(tokenB)
+                );
             if (exchangeAddr != address(0)) {
                 IPancakeswapPair lpToken = IPancakeswapPair(exchangeAddr);
                 (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
-                (reserveA, reserveB) = lpToken.token0() == address(tokenA) ? (reserveA, reserveB) : (reserveB, reserveA);
-        
-                uint lpAmount = lpToken.balanceOf(owner);
-                uint totalSupply = lpToken.totalSupply();
-                uint share = wdiv(lpAmount, totalSupply);
-                uint amtA = wmul(reserveA, share);
-                uint amtB = wmul(reserveB, share);
+                (reserveA, reserveB) = lpToken.token0() == address(tokenA)
+                    ? (reserveA, reserveB)
+                    : (reserveB, reserveA);
+
+                uint256 lpAmount = lpToken.balanceOf(owner);
+                uint256 totalSupply = lpToken.totalSupply();
+                uint256 share = wdiv(lpAmount, totalSupply);
+                uint256 amtA = wmul(reserveA, share);
+                uint256 amtB = wmul(reserveB, share);
                 poolData[i] = PoolData(
                     address(0),
                     address(0),
@@ -587,27 +726,33 @@ contract Resolver is PancakeswapHelpers {
             }
             poolData[i].tokenA = tokenPairs[i].tokenA;
             poolData[i].tokenB = tokenPairs[i].tokenB;
-            poolData[i].tokenABalance = tokenPairs[i].tokenA == getEthAddr() ? owner.balance : tokenA.balanceOf(owner);
-            poolData[i].tokenBBalance = tokenPairs[i].tokenB == getEthAddr() ? owner.balance : tokenB.balanceOf(owner);
+            poolData[i].tokenABalance = tokenPairs[i].tokenA == getEthAddr()
+                ? owner.balance
+                : tokenA.balanceOf(owner);
+            poolData[i].tokenBBalance = tokenPairs[i].tokenB == getEthAddr()
+                ? owner.balance
+                : tokenB.balanceOf(owner);
         }
         return poolData;
     }
 
-    function getPosition(
-        address owner,
-        address[] memory lpTokens
-    ) public view returns (PoolData[] memory)
+    function getPosition(address owner, address[] memory lpTokens)
+        public
+        view
+        returns (PoolData[] memory)
     {
         PoolData[] memory poolData = new PoolData[](lpTokens.length);
- 
-        for (uint i = 0; i < lpTokens.length; i++) {
+
+        for (uint256 i = 0; i < lpTokens.length; i++) {
             IPancakeswapPair lpToken = IPancakeswapPair(lpTokens[i]);
             (uint256 reserveA, uint256 reserveB, ) = lpToken.getReserves();
-            (address tokenA, address tokenB) = (lpToken.token0(), lpToken.token1());
-    
-            uint share = wdiv(lpToken.balanceOf(owner), lpToken.totalSupply());
-            uint amtA = wmul(reserveA, share);
-            uint amtB = wmul(reserveB, share);
+            (address tokenA, address tokenB) =
+                (lpToken.token0(), lpToken.token1());
+
+            uint256 share =
+                wdiv(lpToken.balanceOf(owner), lpToken.totalSupply());
+            uint256 amtA = wmul(reserveA, share);
+            uint256 amtB = wmul(reserveB, share);
             poolData[i] = PoolData(
                 tokenA == getAddressWETH() ? getEthAddr() : tokenA,
                 tokenB == getAddressWETH() ? getEthAddr() : tokenB,
@@ -616,16 +761,19 @@ contract Resolver is PancakeswapHelpers {
                 reserveB,
                 amtA,
                 amtB,
-                tokenA == getAddressWETH() ? owner.balance : TokenInterface(tokenA).balanceOf(owner),
-                tokenB == getAddressWETH() ? owner.balance : TokenInterface(tokenB).balanceOf(owner),
+                tokenA == getAddressWETH()
+                    ? owner.balance
+                    : TokenInterface(tokenA).balanceOf(owner),
+                tokenB == getAddressWETH()
+                    ? owner.balance
+                    : TokenInterface(tokenB).balanceOf(owner),
                 lpToken.balanceOf(owner),
-               lpToken.totalSupply()
+                lpToken.totalSupply()
             );
         }
         return poolData;
     }
 }
-
 
 contract BxdPancakeswapResolver is Resolver {
     string public constant name = "Pancakeswap-Resolver-v1.1";
