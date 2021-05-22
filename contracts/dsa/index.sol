@@ -313,17 +313,13 @@ contract BxdDSAResolver is ConnectorsResolver {
     string public constant name = "DSA-Resolver-v1";
     uint public constant version = 1;
 
-    constructor(address _index, address[] memory _gnosisFactory) public{
+    constructor(address _index) public{
         index = _index;
         indexContract = IndexInterface(index);
         list = indexContract.list();
         listContract = ListInterface(list);
         connectors = indexContract.connectors(version);
         connectorsContract = ConnectorsInterface(connectors);
-        for (uint i = 0; i < _gnosisFactory.length; i++) {
-            require(_gnosisFactory[i] != address(0), "address-not-vaild");
-            GnosisFactoryInterface gnosisFactoryContract = GnosisFactoryInterface(_gnosisFactory[i]);
-            gnosisFactoryContracts.push(gnosisFactoryContract);
-        }
+       
     }
 }

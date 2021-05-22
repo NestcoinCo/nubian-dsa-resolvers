@@ -1,4 +1,5 @@
-pragma solidity ^0.6.0;
+// "SPDX-License-Identifier: UNLICENSED"
+pragma solidity ^0.8.4;
 
 interface IndexInterface {
     function master() external view returns (address);

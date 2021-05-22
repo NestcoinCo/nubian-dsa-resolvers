@@ -18,6 +18,9 @@ module.exports = {
         version: "0.6.10"
       },
       {
+        version: "0.8.4"
+      },
+      {
         version: "0.7.3"
       },
     ]
@@ -49,6 +52,10 @@ module.exports = {
       },
       blockGasLimit: 12000000,
     }
+  },
+  optimizer: {
+    enabled: true,
+    runs: 200,
   },
   etherscan: {
     apiKey: process.env.BSCSCAN_API_KEY
