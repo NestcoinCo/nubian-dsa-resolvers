@@ -14,15 +14,21 @@ interface ConnectorInterface {
 }
 
 contract Basics {
-    IndexInterface instaIndex = IndexInterface(0xfDE04Da1560c238EDBC07Df1779A8593C39103Bc);
-    ConnectorsInterface connectorsContract = ConnectorsInterface(0xc9Fc01064Ad33ACaa4534dA4604Fd6602CEF873d);
+    IndexInterface bxdIndex =
+        IndexInterface(0xC558A66098EFB3314E681F74f5bB08c396257D18);
+    ConnectorsInterface connectorsContract =
+        ConnectorsInterface(0x21cf3ea572473f22597DE28c80cA6BFF94416151);
 }
 
 contract DeployerAuth is Basics {
     mapping(address => bool) public deployer;
 
     modifier isChief {
-        require(connectorsContract.chief(msg.sender) || msg.sender == instaIndex.master(), "not-an-chief");
+        require(
+            connectorsContract.chief(msg.sender) ||
+                msg.sender == bxdIndex.master(),
+            "not-an-chief"
+        );
         _;
     }
 
@@ -34,7 +40,7 @@ contract DeployerAuth is Basics {
     /**
      * @dev Enable a Chief.
      * @param _userAddress Chief Address.
-    */
+     */
     function enableChief(address _userAddress) external isChief {
         deployer[_userAddress] = true;
     }
@@ -42,19 +48,26 @@ contract DeployerAuth is Basics {
     /**
      * @dev Disables a Chief.
      * @param _userAddress Chief Address.
-    */
+     */
     function disableChief(address _userAddress) external isChief {
         delete deployer[_userAddress];
     }
 }
 
 contract ConnectorDeployer is DeployerAuth {
-    function deploy(bytes memory code, uint connectorId, address destructConnector) public isDeployer returns (address addr) {
+    function deploy(
+        bytes memory code,
+        uint256 connectorId,
+        address destructConnector
+    ) public isDeployer returns (address addr) {
         bytes32 salt = bytes32(connectorId);
         assembly {
             addr := create2(0, add(code, 0x20), mload(code), salt)
-            if iszero(extcodesize(addr)) { revert(0, 0) }
+            if iszero(extcodesize(addr)) {
+                revert(0, 0)
+            }
         }
-        if (destructConnector != address(0)) ConnectorInterface(destructConnector).destruct();
+        if (destructConnector != address(0))
+            ConnectorInterface(destructConnector).destruct();
     }
 }

@@ -336,7 +336,7 @@ contract Helpers is DSMath {
      * @dev get Bnb address
      */
     function getEthAddr() public pure returns (address) {
-        return 0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd;
+        return 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     }
 }
 
@@ -347,14 +347,14 @@ contract PancakeswapHelpers is Helpers {
      * @dev Return WETH address
      */
     function getAddressWETH() internal pure returns (address) {
-        return 0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd; // bsc testnet
+        return 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; // bsc testnet
     }
 
     /**
      * @dev Return uniswap v2 router02 Address
      */
     function getPancakeAddr() internal pure returns (address) {
-        return 0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
+        return 0x10ED43C718714eb63d5aA57B78B54704E256024E;
     }
 
     function convert18ToDec(uint256 _dec, uint256 _amt)
