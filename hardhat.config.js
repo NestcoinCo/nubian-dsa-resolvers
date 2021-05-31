@@ -37,13 +37,11 @@ module.exports = {
       url: `http://localhost:8545`,
       accounts: [`0x${PRIVATE_KEY}`],
       timeout: 150000,
-      gasPrice: parseInt(utils.parseUnits("132", "gwei"))
     },
     bscmainnet:{
-      url: `https://bsc-dataseed1.binance.org`,
+      url: `https://bsc-dataseed2.binance.org/`,
       accounts: [`0x${PRIVATE_KEY}`],
       timeout: 150000,
-      gasPrice: parseInt(utils.parseUnits("132", "gwei"))
     },
     hardhat: {
       forking: {

@@ -7,7 +7,8 @@
     "test": "hardhat test",
     "coverage": "hardhat coverage --testfiles 'test/sample-test.js'",
     "compile": "hardhat compile",
-    "deploy": "npx hardhat run --network bsctestnet scripts/deploy.js"
+    "deploy": "npx hardhat run --network bscmainnet scripts/deploy.js",
+    "deploy:testnet": "npx hardhat run --network bsctestnet scripts/deploy.js"
   },
   "repository": {
     "type": "git",
