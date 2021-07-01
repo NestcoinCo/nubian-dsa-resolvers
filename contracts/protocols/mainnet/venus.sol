@@ -17,7 +17,7 @@ interface TokenInterface {
 }
 
 
-interface OrcaleComp {
+interface PriceOracle{
     function getUnderlyingPrice(address) external view returns (uint);
 }
 interface ComptrollerLensInterface {
@@ -93,7 +93,7 @@ contract Helpers is DSMath {
      * @dev get ETH Address
      */
     function getVETHAddress() public pure returns (address) {
-        return 0x2170Ed0880ac9A755fd29B2688956BD959F933F8;
+        return 0xf508fCD89b8bd15579dc79A6827cB4686A3592c8;
     }
 
     /**
@@ -101,6 +101,13 @@ contract Helpers is DSMath {
      */
     function getVenusToken() public pure returns (TokenInterface) {
         return TokenInterface(0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63);
+    }
+    
+    /**
+     * @dev get Venus Read Address
+     */
+    function getCompReadAddress() public pure returns (address) {
+        return 0x595e9DDfEbd47B54b996c839Ef3Dd97db3ED19bA;
     }
 
 
@@ -116,7 +123,6 @@ contract Helpers is DSMath {
         uint supplyRatePerBlock;
         uint borrowRatePerBlock;
         uint collateralFactor;
-        uint compSpeed;
         bool isComped;
         bool isBorrowPaused;
     }
@@ -125,16 +131,21 @@ contract Helpers is DSMath {
 
     function getPriceInEth(VTokenInterface vToken) public view returns (uint priceInETH, uint priceInUSD) {
         uint decimals = getVETHAddress() == address(vToken) ? 18 : TokenInterface(vToken.underlying()).decimals();
-        uint price = OrcaleComp(getOracleAddress()).getUnderlyingPrice(address(vToken));
-        uint ethPrice = OrcaleComp(getOracleAddress()).getUnderlyingPrice(getVETHAddress());
+        uint price = PriceOracle(getOracleAddress()).getUnderlyingPrice(address(vToken));
+        uint ethPrice = PriceOracle(getOracleAddress()).getUnderlyingPrice(getVETHAddress());
         priceInUSD = price / 10 ** (18 - decimals);
         priceInETH = wdiv(priceInUSD, ethPrice);
     }
+    function getPrice(VTokenInterface vToken) external view returns (uint price) {
+            uint256 price =  PriceOracle(getOracleAddress()).getUnderlyingPrice(address(vToken));
+          
+    }
+    
 
-    function getCompoundData(address owner, address[] memory vAddress) public view returns (CompData[] memory) {
-        CompData[] memory tokensData = new CompData[](vAddress.length);
+    function getVenusData(address owner, address[] memory vAddress) public view returns (CompData[] memory) {
+      CompData[] memory tokensData = new CompData[](vAddress.length);
        ComptrollerLensInterface troller = getComptroller();
-
+       
         for (uint i = 0; i < vAddress.length; i++) {
             VTokenInterface vToken = VTokenInterface(vAddress[i]);
             (uint priceInETH, uint priceInUSD) = getPriceInEth(vToken);
@@ -152,12 +163,10 @@ contract Helpers is DSMath {
                 vToken.supplyRatePerBlock(),
                 vToken.borrowRatePerBlock(),
                 collateralFactor,
-                troller.compSpeeds(vAddress[i]),
                 isComped,
                 troller.borrowGuardianPaused(vAddress[i])
             );
         }
-
         return tokensData;
     }
 
